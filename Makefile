@@ -6,13 +6,21 @@
 #    By: mhwangbo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/05/09 17:05:50 by mhwangbo          #+#    #+#              #
-#    Updated: 2018/05/15 19:06:10 by mhwangbo         ###   ########.fr        #
+#    Updated: 2018/05/17 16:38:31 by mhwangbo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = fdf
 
-SRC = *.c
+SRC = main.c \
+	  fdf_color.c \
+	  fdf_draw.c \
+	  fdf_key.c \
+	  fdf_key_etc.c \
+	  fdf_key_nine.c \
+	  fdf_key_rotate.c \
+	  fdf_struct.c
+
 OBJ = $(SRC:.c=.o)
 MLX = -L $(MLXDIR) -lmlx -framework OpenGL -framework Appkit
 
