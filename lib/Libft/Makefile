@@ -6,7 +6,7 @@
 #    By: mhwangbo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/02/19 16:14:40 by mhwangbo          #+#    #+#              #
-#    Updated: 2018/05/10 16:53:04 by mhwangbo         ###   ########.fr        #
+#    Updated: 2018/05/15 16:33:09 by mhwangbo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,6 +15,7 @@ NAME	=	libft.a
 CFLAG	=	-Wall -Wextra -Werror
 
 FILES	=	ft_atoi.c \
+			ft_atoi_base.c \
 			ft_iswhite.c \
 			ft_bzero.c \
 			ft_isalpha.c \
