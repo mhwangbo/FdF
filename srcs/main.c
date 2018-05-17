@@ -6,7 +6,7 @@
 /*   By: mhwangbo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/10 13:07:34 by mhwangbo          #+#    #+#             */
-/*   Updated: 2018/05/16 19:22:33 by mhwangbo         ###   ########.fr       */
+/*   Updated: 2018/05/17 00:21:52 by mhwangbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ int		fdf_color(t_env *e, int i)
 	int		j;
 	int		z_max;
 	int		z_min;
-	
+
 	j = -1;
 	z_max = -2147483648;
 	z_min = 2147483647;
@@ -119,6 +119,7 @@ int		*fdf_split(char *line, t_env *e)
 		{
 			tmp_t_t = tmp_t + 1;
 			e->color = 1;
+			e->color_tmp = 1;
 			e->pos[(e->x_max * (e->i - 1)) + x].color = ft_atoi_base(tmp_t_t);
 		}
 		line_i[x] = ft_atoi(tmp[x]);
@@ -173,6 +174,26 @@ void	fdf_put_struct(int **line, t_env *e)
 	}
 }
 
+int		fdf_draw_color(t_env *e, int i, char c)
+{
+	if (e->color == 1)
+	{
+		if (c == 'x' && e->pos[i].z > 0 && e->pos[i + 1].z != e->pos[i].z)
+			return (e->pos[i + 1].color);
+		else if (c == 'y' && e->pos[i].z > 0 && e->pos[i + e->x_max].z != e->pos[i].z)
+			return (e->pos[i + e->x_max].color);
+		return (e->pos[i].color);
+	}
+	else
+	{
+		if (c == 'x' && e->pos[i].z > 0 && e->pos[i + 1].z != e->pos[i].z)
+			return (fdf_color(e, i + 1));
+		else if (c == 'y' && e->pos[i].z > 0 && e->pos[i + e->x_max].z != e->pos[i].z)
+			return (fdf_color(e, i + e->x_max));
+		return (fdf_color(e, i));
+	}
+}
+
 void	fdf_draw_y(t_env *e, int i, int x_gap, int y_gap)
 {
 	if ((i + e->x_max) < (e->x_max * e->y_max))
@@ -190,10 +211,9 @@ void	fdf_draw_y(t_env *e, int i, int x_gap, int y_gap)
 		while (e->pos->y_a[0] <= e->pos->y_a[2])
 		{
 			mlx_pixel_put(e->mlx_ptr, e->win_ptr, (((e->pos->x_a[2] -
-							e->pos->x_a[1]) / (e->pos->y_a[2] - e->pos->y_a[1]))
-					* (e->pos->y_a[0] - e->pos->y_a[1]) + e->pos->x_a[1])
-					, e->pos->y_a[0], (e->color == 1) ?
-					e->pos[i].color : fdf_color(e, i));
+								e->pos->x_a[1]) / (e->pos->y_a[2] - e->pos->y_a[1]))
+						* (e->pos->y_a[0] - e->pos->y_a[1]) + e->pos->x_a[1])
+					, e->pos->y_a[0], fdf_draw_color(e, i, 'y'));
 			e->pos->y_a[0]++;
 		}
 	}
@@ -235,10 +255,9 @@ void	fdf_draw(t_env *e)
 		{
 			mlx_pixel_put(e->mlx_ptr, e->win_ptr, e->pos->x_a[0],
 					(((e->pos->y_a[2] - e->pos->y_a[1]) /
-					(e->pos->x_a[2] - e->pos->x_a[1])) *
-					(e->pos->x_a[0] - e->pos->x_a[1]) +
-					e->pos->y_a[1]), (e->color == 1) ?
-					e->pos[i].color : fdf_color(e, i));
+					  (e->pos->x_a[2] - e->pos->x_a[1])) *
+					 (e->pos->x_a[0] - e->pos->x_a[1]) +
+					 e->pos->y_a[1]), fdf_draw_color(e, i, 'x'));
 			e->pos->x_a[0]++;
 		}
 		fdf_draw_y(e, i, x_gap, y_gap);
@@ -247,28 +266,19 @@ void	fdf_draw(t_env *e)
 
 void	fdf_win_message(t_env *e)
 {
-	mlx_string_put(e->mlx_ptr, e->win_ptr, 5, 5, 0xFFFFFF, "[ESC] to exit");
-	mlx_string_put(e->mlx_ptr, e->win_ptr, 5, 25, 0xFFFFFF, "[Q] to zoom-in");
-	mlx_string_put(e->mlx_ptr, e->win_ptr, 5, 45, 0xFFFFFF, "[W] to zoom-out");
-	mlx_string_put(e->mlx_ptr, e->win_ptr, 5, 65, 0xFFFFFF, "ARROW KEY to move");
-	mlx_string_put(e->mlx_ptr, e->win_ptr, 5, 85, 0xFFFFFF, "[R] to reset");
-	mlx_string_put(e->mlx_ptr, e->win_ptr, 5, 105, 0xFFFFFF, "[Page Up] to increase z");
-	mlx_string_put(e->mlx_ptr, e->win_ptr, 5, 125, 0xFFFFFF, "[Page Down] to decrease z");
+	mlx_string_put(e->mlx_ptr, e->win_ptr, 5, 5, 0xFFFFFF, "[ESC] : exit");
+	mlx_string_put(e->mlx_ptr, e->win_ptr, 5, 25, 0xFFFFFF, "[Q] : zoom-in");
+	mlx_string_put(e->mlx_ptr, e->win_ptr, 5, 45, 0xFFFFFF, "[W] : zoom-out");
+	mlx_string_put(e->mlx_ptr, e->win_ptr, 5, 65, 0xFFFFFF, "ARROW KEY : move");
+	mlx_string_put(e->mlx_ptr, e->win_ptr, 5, 85, 0xFFFFFF, "[R] : reset");
+	mlx_string_put(e->mlx_ptr, e->win_ptr, 5, 105, 0xFFFFFF, "[Page Up] : z increase");
+	mlx_string_put(e->mlx_ptr, e->win_ptr, 5, 125, 0xFFFFFF, "[Page Down] : z decrease");
 	if (e->color == 0)
-		mlx_string_put(e->mlx_ptr, e->win_ptr, 5, 145, 0xFFFFFF, "[C] to change color");
-}
-
-int		fdf_key_reset(t_env *e)
-{
-	int		i;
-
-	i = -1;
-	e->zoom = 1;
-	e->y_gap = 0;
-	e->x_gap = 0;
-	while (++i < (e->x_max * e->y_max))
-		e->pos[i].z = e->pos[i].z_sav;
-	return (0);
+		mlx_string_put(e->mlx_ptr, e->win_ptr, 5, 145, 0xFFFFFF, "[C] : color");
+	if (e->color_tmp == 1)
+		mlx_string_put(e->mlx_ptr, e->win_ptr, 5, 165, 0xFFFFFF, "[X] : custom color");
+	mlx_string_put(e->mlx_ptr, e->win_ptr, 5, 185, 0xFFFFFF, "[A] : clockwise");
+	mlx_string_put(e->mlx_ptr, e->win_ptr, 5, 205, 0xFFFFFF, "[S] : counter clockwise");
 }
 
 int		fdf_key_up_down(int key, t_env *e)
@@ -285,38 +295,116 @@ int		fdf_key_up_down(int key, t_env *e)
 	return (0);
 }
 
-int		fdf_key_color(t_env *e)
+int		fdf_key_color(int key, t_env *e)
 {
-	if (e->color_c < 3)
+	if (key == 7 && e->color == 1 && e->color_tmp == 1)
+		e->color = 0;
+	else if (key == 7 && e->color == 0 && e->color_tmp == 1)
+		e->color = 1;
+	else if (key == 8 && e->color == 0 && e->color_c < 3)
 		e->color_c += 1;
-	else if (e->color_c == 3)
+	else if (key == 8 && e->color == 0 && e->color_c == 3)
 		e->color_c = 0;
 	return (0);
 }
 
-void	fdf_key_nine(int key, t_env *e)
+void	fdf_key_nine_one(t_env *e)
 {
-	int		tmp;
 	int		i;
-
-	if (key == 0 && e->nine < 3)
-		e->nine += 1;
-	else if (key == 1 && e->nine > 0)
-		e->nine -= 1;
-	else if (key == 0 && e->nine == 3)
-		e->nine = 0;
-	else if (key == 1 && e->nine == 0)
-		e->nine = 3;
-	i = -1;
-	if (e->nine == 1)
+	int		x;
+	int		y_tmp;
+	int		y;
+	int		j;
+	int		tmp;
+	t_pos	*tmp_p;
+	
+	i = 0;
+	tmp_p = ft_memalloc(sizeof(t_pos) * (e->x_max * e->y_max));
+	tmp = e->y_max;
+	e->y_max = e->x_max;
+	e->x_max = tmp;
+	while (i < (e->x_max * e->y_max))
 	{
-		while (++i < (e->x_max * e->y_max))
+		x = -1;
+		while (++x < e->y_max)
 		{
-			tmp = e->pos[i].x;
-			e->pos[i].x = e->pos[i].y;
-			e->pos[i].y = tmp;
+			y = e->x_max;
+			y_tmp = 0;
+			while (--y > -1)
+			{
+				j = -1;
+				while (++j < (e->x_max * e->y_max))
+					if (e->pos[j].x == x && e->pos[j].y == y)
+					{
+						tmp_p[i].x = y_tmp++;
+						tmp_p[i].y = x;
+						tmp_p[i].z = e->pos[j].z;
+						tmp_p[i].color = e->pos[j].color;
+						i++;
+					}
+			}
 		}
 	}
+	i = -1;
+	while (++i < (e->x_max * e->y_max))
+	{
+		e->pos[i].x = tmp_p[i].x;
+		e->pos[i].y = tmp_p[i].y;
+		e->pos[i].z = tmp_p[i].z;
+		e->pos[i].color = tmp_p[i].color;
+	}
+}
+
+
+void	fdf_key_nine(int key, t_env *e)
+{
+	int	i;
+	
+	i = 2;
+	if (key == 0 && e->nine < 3)
+	{
+		e->nine += 1;
+		fdf_key_nine_one(e);
+	}
+	else if (key == 1 && e->nine > 0)
+	{
+		e->nine -= 1;
+		while (--i)
+			fdf_key_nine_one(e);
+	}
+	else if (key == 0 && e->nine == 3)
+	{
+		e->nine = 0;
+		fdf_key_nine_one(e);
+	}
+	else if (key == 1 && e->nine == 0)
+	{
+		e->nine = 3;
+		while (--i)
+			fdf_key_nine_one(e);
+	}
+}
+
+int		fdf_key_reset(t_env *e)
+{
+	int		i;
+
+	i = -1;
+	while (1)
+	{
+		fdf_key_nine(0, e);
+		if (e->nine == 0)
+			break;
+	}
+	e->zoom = 1;
+	e->y_gap = 0;
+	e->x_gap = 0;
+	e->color_c = 0;
+	e->color = e->color_tmp;
+	while (++i < (e->x_max * e->y_max))
+		e->pos[i].z = e->pos[i].z_sav;
+	e->z_inc = 0;
+	return (0);
 }
 
 int		fdf_key_function(int key, t_env *e)
@@ -330,7 +418,7 @@ int		fdf_key_function(int key, t_env *e)
 	key == 123 ? (e->x_gap -= 10) : 0;
 	key == 15 ? fdf_key_reset(e) : 0;
 	(key == 116 || key == 121) ? fdf_key_up_down(key, e) : 0;
-	key == 8 ? fdf_key_color(e) : 0;
+	(key == 8 || key == 7) ? fdf_key_color(key, e) : 0;
 	(key == 0 || key == 1) ? fdf_key_nine(key, e) : 0;
 	return (0);
 }
@@ -341,7 +429,7 @@ int		fdf_key(int key, t_env *e)
 	fdf_key_function(key, e);
 	fdf_win_message(e);
 	fdf_draw(e);
-	mlx_hook(e->win_ptr, 2, 0, fdf_key, e);
+	mlx_hook(e->win_ptr, 2, 2, fdf_key, e);
 	mlx_loop(e->mlx_ptr);
 	return (0);
 }
@@ -350,7 +438,7 @@ void	fdf_window(t_env *e)
 {
 	fdf_win_message(e);
 	fdf_draw(e);
-	mlx_hook(e->win_ptr, 2, 0, fdf_key, e);
+	mlx_hook(e->win_ptr, 2, 2, fdf_key, e);
 	mlx_loop(e->mlx_ptr);
 }
 

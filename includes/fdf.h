@@ -6,7 +6,7 @@
 /*   By: mhwangbo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/09 17:27:32 by mhwangbo          #+#    #+#             */
-/*   Updated: 2018/05/16 19:16:11 by mhwangbo         ###   ########.fr       */
+/*   Updated: 2018/05/16 23:38:34 by mhwangbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ typedef struct		s_env
 	float			y_gap;
 	int				z_scale;
 	int				color;
+	int				color_tmp;
 	int				color_c;
 	int				i;
 	float			zoom;
