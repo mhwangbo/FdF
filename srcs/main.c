@@ -6,7 +6,7 @@
 /*   By: mhwangbo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/10 13:07:34 by mhwangbo          #+#    #+#             */
-/*   Updated: 2018/05/17 15:27:30 by mhwangbo         ###   ########.fr       */
+/*   Updated: 2018/05/17 19:26:57 by mhwangbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,16 @@ void	fdf_error(int i)
 	exit(0);
 }
 
+void	fdf_copy(t_env *e)
+{
+	int	i;
+	
+	i = -1;
+	e->tmp = ft_memalloc(sizeof(t_pos) * (e->y_max * e->x_max) + 1);
+	while (++i < (e->y_max * e->x_max))
+		e->tmp[i] = e->pos[i];
+}
+
 int		main(int ac, char **av)
 {
 	t_env	e;
@@ -76,6 +86,7 @@ int		main(int ac, char **av)
 	e.zoom = 1;
 	e.mlx_ptr = mlx_init();
 	e.win_ptr = mlx_new_window(e.mlx_ptr, e.win_x, e.win_y, "FdF");
+	fdf_copy(&e);
 	fdf_window(&e);
 	return (0);
 }

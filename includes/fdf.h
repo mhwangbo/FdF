@@ -6,7 +6,7 @@
 /*   By: mhwangbo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/09 17:27:32 by mhwangbo          #+#    #+#             */
-/*   Updated: 2018/05/17 16:38:20 by mhwangbo         ###   ########.fr       */
+/*   Updated: 2018/05/17 20:49:11 by mhwangbo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,10 @@
 
 typedef struct		s_pos
 {
-	int				x;
-	int				y;
-	int				z;
-	int				z_sav;
+	float			x;
+	float			y;
+	float			z;
+	float			z_sav;
 	float			x_a[3];
 	float			y_a[3];
 	int				color;
@@ -57,6 +57,7 @@ typedef struct		s_env
 	void			*win_ptr;
 	int				nine;
 	t_pos			*pos;
+	t_pos			*tmp;
 }					t_env;
 
 /*
